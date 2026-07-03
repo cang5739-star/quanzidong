@@ -25,7 +25,7 @@ jobs:
           curl -L -o /tmp/ldid https://github.com/ProcursusTeam/ldid/releases/download/v2.1.5-procursus7/ldid_macosx_arm64
           chmod +x /tmp/ldid
           sudo cp /tmp/ldid /usr/local/bin/ldid
-          which ldid && ldid -v
+          echo "ldid installed at $(which ldid)"
 
       - name: 编译
         run: |
