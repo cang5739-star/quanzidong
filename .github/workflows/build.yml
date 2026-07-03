@@ -19,6 +19,14 @@ jobs:
           git clone --recursive --depth=1 https://github.com/theos/theos.git /opt/theos 2>&1 | tail -5
           echo "THEOS=/opt/theos" >> $GITHUB_ENV
 
+      - name: 安装ldid签名工具
+        run: |
+          # ldid用于签名dylib，Theos依赖
+          curl -L -o /tmp/ldid https://github.com/ProcursusTeam/ldid/releases/download/v2.1.5-procursus7/ldid_macosx_arm64
+          chmod +x /tmp/ldid
+          sudo cp /tmp/ldid /usr/local/bin/ldid
+          which ldid && ldid -v
+
       - name: 编译
         run: |
           export THEOS=/opt/theos
