@@ -83,7 +83,7 @@
     for (NSArray *group in allPatterns) {
         for (NSString *pattern in group) {
             if ([lower containsString:pattern.lowercaseString]) {
-                HBLogInfo(@"[马桶AI-过滤] 命中关键词: %@", pattern);
+                NSLog(@"[马桶AI-过滤] 命中关键词: %@", pattern);
                 return YES;
             }
         }

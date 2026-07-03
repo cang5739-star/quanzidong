@@ -41,7 +41,7 @@
     // 过滤自己的消息
     if ([self isSelfMessage:rawMessage]) return;
 
-    HBLogInfo(@"[马桶Ai] 处理消息: %@ -> %@", senderName, content);
+    NSLog(@"[马桶Ai] 处理消息: %@ -> %@", senderName, content);
 
     // 获取聊天历史
     NSArray *history = [[MomoAI sharedInstance] chatHistoryForConversation:conversationId];
@@ -60,13 +60,13 @@
                                          completion:^(NSString *reply, NSError *error) {
 
         if (error) {
-            HBLogInfo(@"[马桶Ai] AI回复失败: %@", error.localizedDescription);
+            NSLog(@"[马桶Ai] AI回复失败: %@", error.localizedDescription);
             return;
         }
 
         if (!reply || reply.length == 0) return;
 
-        HBLogInfo(@"[马桶Ai] 准备发送AI回复: %@", reply);
+        NSLog(@"[马桶Ai] 准备发送AI回复: %@", reply);
 
         // 保存聊天历史
         NSArray *updatedHistory = history ? [history arrayByAddingObjectsFromArray:@[
@@ -96,7 +96,7 @@
     NSDictionary *prefs = [[MomoAI sharedInstance] loadPrefs];
     if (![prefs[PREFS_KEY_AUTO_GREET] boolValue]) return;
 
-    HBLogInfo(@"[马桶Ai] 收到新招呼，准备自动回复");
+    NSLog(@"[马桶Ai] 收到新招呼，准备自动回复");
 
     NSString *userId = [self extractGreetingUserId:greeting];
     if (!userId) return;
@@ -264,7 +264,7 @@
         for (int i = 0; i < 5; i++) {
             SEL sel = sendSels[i];
             if ([controller respondsToSelector:sel]) {
-                HBLogInfo(@"[马桶Ai] 通过控制器发送: %@", NSStringFromSelector(sel));
+                NSLog(@"[马桶Ai] 通过控制器发送: %@", NSStringFromSelector(sel));
                 // 需要根据实际方法签名调整
                 // [controller performSelector:sel withObject:reply];
                 return;
@@ -279,7 +279,7 @@
         if (manager) {
             SEL sendSel = NSSelectorFromString(@"sendTextMessage:to:complete:");
             if ([manager respondsToSelector:sendSel]) {
-                HBLogInfo(@"[马桶Ai] 通过管理器发送消息");
+                NSLog(@"[马桶Ai] 通过管理器发送消息");
                 // 这里需要用NSInvocation处理多参数
                 // 因为performSelector只支持最多2个参数
             }
@@ -288,11 +288,11 @@
 
     // 方法3: 直接通过陌陌内部API发送 (最可靠)
     // 需要逆向得到实际的网络请求类
-    HBLogInfo(@"[马桶Ai] 发送回复: %@ -> %@", reply, conversationId);
+    NSLog(@"[马桶Ai] 发送回复: %@ -> %@", reply, conversationId);
 }
 
 - (void)sendRandomImageToConversation:(NSString *)conversationId senderId:(NSString *)senderId {
-    HBLogInfo(@"[马桶Ai] 尝试发送图片: %@", conversationId);
+    NSLog(@"[马桶Ai] 尝试发送图片: %@", conversationId);
 
     // 从相册选择或使用默认图片
     // 需要hook UIImagePickerController 或使用陌陌内部图片发送API

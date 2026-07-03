@@ -20,13 +20,13 @@
 
 static void SettingsChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
     [[MomoAI sharedInstance] loadPrefs];
-    HBLogInfo(@"[马桶Ai] 配置已更新");
+    NSLog(@"[马桶Ai] 配置已更新");
 }
 
 #pragma mark - 构造函数 (加载时自动执行)
 
 %ctor {
-    HBLogInfo(@"[马桶Ai] 插件已加载，等待陌陌启动...");
+    NSLog(@"[马桶Ai] 插件已加载，等待陌陌启动...");
 
     // 监听设置变化
     CFNotificationCenterAddObserver(
@@ -35,13 +35,13 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
         SettingsChangedCallback,
         CFSTR("com.matong.momoaitweak/settingsChanged"),
         NULL,
-        CFNotificationSchedulingDefault
+        kCFNotificationSchedulingDefault
     );
 
     // 延迟初始化，等待陌陌App完全启动
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [[MomoAI sharedInstance] loadPrefs];
-        HBLogInfo(@"[马桶Ai] 初始化完成");
+        NSLog(@"[马桶Ai] 初始化完成");
     });
 }
 
@@ -71,7 +71,7 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
 
     if (![[MomoAI sharedInstance] isEnabled]) return;
 
-    HBLogInfo(@"[马桶Ai] 收到新消息: %@", message);
+    NSLog(@"[马桶Ai] 收到新消息: %@", message);
 
     // 将消息交给AI处理
     [[MomoHooks sharedHooks] handleIncomingMessage:message
@@ -81,7 +81,7 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
 // 消息发送成功回调
 - (void)didSendMessage:(id)message {
     %orig;
-    HBLogInfo(@"[马桶Ai] 消息发送成功: %@", message);
+    NSLog(@"[马桶Ai] 消息发送成功: %@", message);
 }
 
 %end
@@ -99,7 +99,7 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
 
     // 如果是马桶AI生成的回复，记录日志
     if ([text hasPrefix:@"[AI]"] || [text hasPrefix:@"[马桶AI]"]) {
-        HBLogInfo(@"[马桶Ai] AI消息发送: %@ -> %@", text, targetId);
+        NSLog(@"[马桶Ai] AI消息发送: %@ -> %@", text, targetId);
     }
 
     %orig;
@@ -110,7 +110,7 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
                       to:(NSString *)targetId
                 complete:(void(^)(BOOL, NSError *))complete {
 
-    HBLogInfo(@"[马桶Ai] 发送图片: %@", targetId);
+    NSLog(@"[马桶Ai] 发送图片: %@", targetId);
     %orig;
 }
 
@@ -123,12 +123,12 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     %orig;
-    HBLogInfo(@"[马桶Ai] 进入会话: %@", indexPath);
+    NSLog(@"[马桶Ai] 进入会话: %@", indexPath);
 }
 
 - (void)onNewConversation:(id)conversation {
     %orig;
-    HBLogInfo(@"[马桶Ai] 新会话: %@", conversation);
+    NSLog(@"[马桶Ai] 新会话: %@", conversation);
 }
 
 %end
@@ -144,7 +144,7 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
 
     if (![[MomoAI sharedInstance] isEnabled]) return;
 
-    HBLogInfo(@"[马桶Ai] 收到新招呼: %@", greeting);
+    NSLog(@"[马桶Ai] 收到新招呼: %@", greeting);
     [[MomoHooks sharedHooks] handleNewGreeting:greeting];
 }
 
@@ -157,12 +157,12 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
 
 - (void)applicationDidBecomeActive:(id)application {
     %orig;
-    HBLogInfo(@"[马桶Ai] 陌陌进入前台");
+    NSLog(@"[马桶Ai] 陌陌进入前台");
 }
 
 - (void)applicationDidEnterBackground:(id)application {
     %orig;
-    HBLogInfo(@"[马桶Ai] 陌陌进入后台");
+    NSLog(@"[马桶Ai] 陌陌进入后台");
 }
 
 %end
@@ -170,5 +170,5 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
 #pragma mark - 构造函数结束
 
 %ctor {
-    HBLogInfo(@"[马桶Ai] Hook注册完成");
+    NSLog(@"[马桶Ai] Hook注册完成");
 }

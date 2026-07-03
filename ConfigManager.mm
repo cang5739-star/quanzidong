@@ -97,7 +97,7 @@
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithURL:url
         completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
             if (error) {
-                HBLogInfo(@"[马桶Ai] 版本检查失败: %@", error.localizedDescription);
+                NSLog(@"[马桶Ai] 版本检查失败: %@", error.localizedDescription);
                 return;
             }
             NSError *jsonError;
@@ -112,7 +112,7 @@
             NSInteger localVersion = [prefs[PREFS_KEY_LAST_VERSION] integerValue];
 
             if (remoteVersion > localVersion) {
-                HBLogInfo(@"[马桶Ai] 发现新版本: %@", manifest[@"version_name"]);
+                NSLog(@"[马桶Ai] 发现新版本: %@", manifest[@"version_name"]);
                 // 版本更新逻辑
                 NSMutableDictionary *newPrefs = [self loadPrefs];
                 newPrefs[PREFS_KEY_LAST_VERSION] = @(remoteVersion);

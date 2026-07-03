@@ -95,14 +95,14 @@
         return;
     }
 
-    HBLogInfo(@"[马桶Ai] 请求AI: model=%@, msgCount=%lu", model, (unsigned long)[messages count]);
+    NSLog(@"[马桶Ai] 请求AI: model=%@, msgCount=%lu", model, (unsigned long)[messages count]);
 
     NSURLSessionDataTask *task = [[NSURLSession sharedSession]
         dataTaskWithRequest:request
         completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
 
             if (error) {
-                HBLogInfo(@"[马桶Ai] AI请求失败: %@", error.localizedDescription);
+                NSLog(@"[马桶Ai] AI请求失败: %@", error.localizedDescription);
                 if (completion) completion(nil, error);
                 return;
             }
@@ -112,7 +112,7 @@
 
             if (jsonError) {
                 NSString *raw = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                HBLogInfo(@"[马桶Ai] JSON解析失败: %@", raw);
+                NSLog(@"[马桶Ai] JSON解析失败: %@", raw);
                 if (completion) {
                     completion(nil, [NSError errorWithDomain:@"MomoAI"
                                                        code:1002
@@ -130,7 +130,7 @@
                 // 处理finish_reason
                 NSString *finishReason = firstChoice[@"finish_reason"];
                 if (![finishReason isEqualToString:@"stop"] && ![finishReason isEqualToString:@"length"]) {
-                    HBLogInfo(@"[马桶Ai] AI回复异常结束: %@", finishReason);
+                    NSLog(@"[马桶Ai] AI回复异常结束: %@", finishReason);
                 }
             }
 
@@ -143,7 +143,7 @@
 
             if (content) {
                 content = [content stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-                HBLogInfo(@"[马桶Ai] AI回复: %@...", [content substringToIndex:MIN(50, content.length)]);
+                NSLog(@"[马桶Ai] AI回复: %@...", [content substringToIndex:MIN(50, content.length)]);
 
                 // 关键词过滤
                 if ([prefs[PREFS_KEY_FILTER_CONTACT] boolValue]) {
@@ -153,7 +153,7 @@
                 if (completion) completion(content, nil);
             } else {
                 NSString *raw = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-                HBLogInfo(@"[马桶Ai] 无法解析AI回复: %@", raw);
+                NSLog(@"[马桶Ai] 无法解析AI回复: %@", raw);
                 if (completion) {
                     completion(nil, [NSError errorWithDomain:@"MomoAI"
                                                        code:1003
