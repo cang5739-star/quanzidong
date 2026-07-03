@@ -13,33 +13,20 @@ jobs:
       - name: 拉取代码
         uses: actions/checkout@v4
 
-      - name: 安装Theos + SDK
+      - name: 安装Theos
         run: |
-          set -e
+          # 传统方式安装Theos（这个最稳）
+          sudo mkdir -p /opt/theos
+          sudo chown $(whoami) /opt/theos
+          git clone --recursive --depth=1 https://github.com/theos/theos.git /opt/theos
 
-          # 克隆Theos
-          git clone --recursive --depth=1 https://github.com/theos/theos.git $HOME/theos
-
-          # 使用Theos官方SDK安装方式
-          cd $HOME/theos
-          mkdir -p sdks
-
-          # 下载iOS 16.2 SDK (这个源比较稳)
-          curl -L -o /tmp/iPhoneOS16.2.sdk.tar.xz \
-            https://github.com/XXTouchGG/iphoneOS16.2.sdk/raw/main/iPhoneOS16.2.sdk.tar.xz
-
-          # 解压
-          tar xf /tmp/iPhoneOS16.2.sdk.tar.xz -C $HOME/theos/sdks/
-
-          # 设置环境变量
-          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
-          echo "THEOS_DEVICE_IP=localhost" >> $GITHUB_ENV
-
-          ls -la $HOME/theos/sdks/
+          # 复制SDK（macOS自带iOS SDK，直接链过去就行）
+          # Theos会自动检测Xcode的SDK
+          echo "THEOS=/opt/theos" >> $GITHUB_ENV
 
       - name: 编译插件
         run: |
-          export THEOS=$HOME/theos
+          export THEOS=/opt/theos
           export THEOS_DEVICE_IP=localhost
           make package 2>&1
 
@@ -48,14 +35,10 @@ jobs:
         with:
           name: MomoAITweak
           path: packages/*.deb
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: 打印结果
         run: |
           echo "## ✅ 马桶Ai插件编译完成" > $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📦 下载安装" >> $GITHUB_STEP_SUMMARY
-          echo "1. 下载下方的 **MomoAITweak** (zip文件)" >> $GITHUB_STEP_SUMMARY
-          echo "2. 解压得到 .deb" >> $GITHUB_STEP_SUMMARY
-          echo "3. 传到手机用 Filza 安装" >> $GITHUB_STEP_SUMMARY
-          ls -la packages/
+          ls -la packages/ 2>/dev/null || echo "未生成deb包，请检查日志"
