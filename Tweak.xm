@@ -35,7 +35,7 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
         SettingsChangedCallback,
         CFSTR("com.matong.momoaitweak/settingsChanged"),
         NULL,
-        0
+        CFNotificationSuspensionBehaviorCoalesce
     );
 
     // 延迟初始化，等待陌陌App完全启动
