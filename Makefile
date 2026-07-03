@@ -14,5 +14,6 @@ MomoAITweak_PRIVATE_FRAMEWORKS =
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
-SUBPROJECTS += MomoAIPrefs
-include $(THEOS_MAKE_PATH)/aggregate.mk
+# PreferenceBundle需要在真机上编译，CI会跳过
+# SUBPROJECTS += MomoAIPrefs
+# include $(THEOS_MAKE_PATH)/aggregate.mk
