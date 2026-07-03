@@ -120,6 +120,18 @@ typedef NS_ENUM(NSInteger, PersonaType) {
 // 版本检查
 - (void)checkForUpdates;
 
+// 聊天历史
+- (NSArray *)chatHistoryForConversation:(NSString *)conversationId;
+- (void)saveChatHistory:(NSArray *)history forConversation:(NSString *)conversationId;
+
+// 人设(当前)
+- (NSString *)currentPersonaPrompt;
+
+// AI聊天辅助
+- (NSArray *)buildMessagesWithUserText:(NSString *)userText
+                               persona:(NSString *)personaPrompt
+                           chatHistory:(NSArray *)history;
+
 @end
 
 // ============================================================
