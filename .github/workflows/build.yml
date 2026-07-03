@@ -3,33 +3,45 @@ name: 编译马桶Ai越狱插件
 on:
   push:
     branches: [ "master" ]
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-latest   # GitHub免费的Mac服务器
+    runs-on: macos-latest
 
     steps:
       - name: 拉取代码
         uses: actions/checkout@v4
 
-      - name: 安装Theos
+      - name: 安装Theos + SDK
         run: |
           set -e
-          # 下载预编译的Theos
+
+          # 克隆Theos
           git clone --recursive --depth=1 https://github.com/theos/theos.git $HOME/theos
-          # 下载iOS SDK (Theos需要)
-          curl -L https://github.com/xybp888/iOS-SDKs/releases/download/16.5/iOS16.5.sdk.zip -o /tmp/sdk.zip
-          mkdir -p $HOME/theos/sdks
-          unzip -q /tmp/sdk.zip -d $HOME/theos/sdks/
+
+          # 使用Theos官方SDK安装方式
+          cd $HOME/theos
+          mkdir -p sdks
+
+          # 下载iOS 16.2 SDK (这个源比较稳)
+          curl -L -o /tmp/iPhoneOS16.2.sdk.tar.xz \
+            https://github.com/XXTouchGG/iphoneOS16.2.sdk/raw/main/iPhoneOS16.2.sdk.tar.xz
+
+          # 解压
+          tar xf /tmp/iPhoneOS16.2.sdk.tar.xz -C $HOME/theos/sdks/
+
+          # 设置环境变量
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+          echo "THEOS_DEVICE_IP=localhost" >> $GITHUB_ENV
+
+          ls -la $HOME/theos/sdks/
 
       - name: 编译插件
         run: |
           export THEOS=$HOME/theos
-          export THEOS_DEVICE_IP=localhost  # CI不需要真机
-          make package
-          echo "编译完成"
+          export THEOS_DEVICE_IP=localhost
+          make package 2>&1
 
       - name: 上传编译产物
         uses: actions/upload-artifact@v4
@@ -38,16 +50,12 @@ jobs:
           path: packages/*.deb
           if-no-files-found: error
 
-      - name: 上传编译包信息
+      - name: 打印结果
         run: |
-          echo "## 马桶Ai插件已编译" > $GITHUB_STEP_SUMMARY
+          echo "## ✅ 马桶Ai插件编译完成" > $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| 文件 | 说明 |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
-          echo "| \`packages/*.deb\` | Cydia/Sileo安装包 |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 安装方法" >> $GITHUB_STEP_SUMMARY
-          echo "1. 下载 .deb 文件" >> $GITHUB_STEP_SUMMARY
-          echo "2. 传到手机 (AirDrop / SCP / iFunbox)" >> $GITHUB_STEP_SUMMARY
-          echo "3. 用 Filza 打开并安装" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 下载安装" >> $GITHUB_STEP_SUMMARY
+          echo "1. 下载下方的 **MomoAITweak** (zip文件)" >> $GITHUB_STEP_SUMMARY
+          echo "2. 解压得到 .deb" >> $GITHUB_STEP_SUMMARY
+          echo "3. 传到手机用 Filza 安装" >> $GITHUB_STEP_SUMMARY
           ls -la packages/
