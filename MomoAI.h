@@ -19,21 +19,21 @@
 // ============================================================
 
 // 聊天视图控制器 - 需要从陌陌头文件中找到实际类名
-#define MOMO_CHAT_VC_CLASS          @"MCChatViewController"
+#define MOMO_CHAT_VC_CLASS          @"TTChatViewController"
 // 消息模型类
-#define MOMO_MESSAGE_CLASS          @"MCMessage"
+#define MOMO_MESSAGE_CLASS          @"TTMessage"
 // 消息管理器
-#define MOMO_MESSAGE_MANAGER_CLASS  @"MCNewMessageManager"
+#define MOMO_MESSAGE_MANAGER_CLASS  @"TTNewMessageManager"
 // 会话列表控制器
-#define MOMO_CONVERSATION_VC_CLASS  @"MCConversationListController"
+#define MOMO_CONVERSATION_VC_CLASS  @"TTConversationListController"
 // 联系人/好友管理器
-#define MOMO_CONTACT_MANAGER_CLASS  @"MCContactManager"
+#define MOMO_CONTACT_MANAGER_CLASS  @"TTContactManager"
 // 用户资料类
-#define MOMO_USER_PROFILE_CLASS     @"MCMomentsUserProfile"
+#define MOMO_USER_PROFILE_CLASS     @"TTMomentsUserProfile"
 // 打招呼/赞管理器
-#define MOMO_GREETING_MANAGER_CLASS @"MCGreetingManager"
+#define MOMO_GREETING_MANAGER_CLASS @"TTGreetingManager"
 // 网络请求管理器
-#define MOMO_NETWORK_MANAGER_CLASS  @"MCNetworkManager"
+#define MOMO_NETWORK_MANAGER_CLASS  @"TTNetworkManager"
 
 // ============================================================
 // 配置键名

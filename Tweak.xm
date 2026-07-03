@@ -55,7 +55,7 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
  * 2. 或用Frida: frida -U com.momo.im -e "ObjC.classes"
  *
  * 常见陌陌iOS类名模式:
- *   MCxxx, MCMessageManager, MCSessionController
+ *   TTxxx, TTChatViewController, TTSessionViewController
  *   MomoImxxx, IMMessage, IMChatManager
  *   TBxxx (可能经过混淆)
  */
@@ -64,7 +64,7 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
 // Hook 1: 收到新消息
 // 陌陌收到消息时调用这个方法
 // ============================================================
-%hook MCChatViewController
+%hook TTChatViewController
 
 - (void)didReceiveMessage:(id)message {
     %orig;
@@ -90,7 +90,7 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
 // Hook 2: 消息管理器 - 拦截消息发送
 // 用于自动发送AI生成的回复
 // ============================================================
-%hook MCNewMessageManager
+%hook TTNewMessageManager
 
 // 发送文本消息
 - (void)sendTextMessage:(NSString *)text
@@ -119,7 +119,7 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
 // ============================================================
 // Hook 3: 会话列表 - 有新会话时触发
 // ============================================================
-%hook MCConversationListController
+%hook TTConversationListController
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     %orig;
@@ -136,7 +136,7 @@ static void SettingsChangedCallback(CFNotificationCenterRef center, void *observ
 // ============================================================
 // Hook 4: 打招呼/喜欢管理
 // ============================================================
-%hook MCGreetingManager
+%hook TTGreetingManager
 
 // 收到新的招呼/喜欢
 - (void)onNewGreeting:(id)greeting {
