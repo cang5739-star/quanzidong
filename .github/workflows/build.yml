@@ -26,11 +26,6 @@ jobs:
           sudo cp /tmp/ldid /usr/local/bin/ldid
           echo "ldid installed at $(which ldid)"
 
-      - name: 安装dpkg打包工具
-        run: |
-          brew install dpkg 2>&1 | tail -3
-          which dpkg-deb
-
       - name: 编译
         run: |
           export THEOS=/opt/theos
@@ -55,9 +50,24 @@ jobs:
           echo "=== 结果 ==="
           find packages -name '*.deb' 2>/dev/null || echo "无deb包"
 
+      - name: 打包上传
+        run: |
+          # 找编译出来的dylib
+          DYLIB=$(find .theos -name "*.dylib" -type f | head -1)
+          if [ -z "$DYLIB" ]; then
+            echo "没有找到dylib"
+            exit 1
+          fi
+          echo "找到: $DYLIB ($(du -h "$DYLIB" | cut -f1))"
+          # 复制到输出目录
+          mkdir -p output
+          cp "$DYLIB" output/MomoAITweak.dylib
+          cp layout/Library/MobileSubstrate/DynamicLibraries/MomoAITweak.plist output/
+          echo "打包完成"
+
       - name: 上传产物
         uses: actions/upload-artifact@v4
         with:
           name: MomoAITweak
-          path: packages/*.deb
-          if-no-files-found: warn
+          path: output/
+          if-no-files-found: error
