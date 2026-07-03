@@ -79,7 +79,7 @@
 
 - (NSString *)currentPersonaPrompt {
     NSDictionary *prefs = [self loadPrefs];
-    PersonaType type = [prefs[PREFS_KEY_PERSONA] integerValue];
+    PersonaType type = (PersonaType)[prefs[PREFS_KEY_PERSONA] integerValue];
     NSString *custom = prefs[PREFS_KEY_CUSTOM_PERSONA] ?: @"";
 
     if (type == PersonaTypeCustom && custom.length > 0) {
@@ -90,13 +90,13 @@
 
     // 拼接系统级约束（从Android源码逆向）
     NSString *constraints =
-        "\n\n【重要规则】"
-        "\n1. 绝对不要在任何情况下透露微信号、QQ号、手机号等联系方式"
-        "\n2. 如果对方问联系方式，礼貌地转移话题"
-        "\n3. 不要说自己是一个AI或程序，保持人设身份"
-        "\n4. 回复不要太长，20-80个字最为自然"
-        "\n5. 根据聊天的熟悉程度调整语气，从陌生到熟悉逐步升温"
-        "\n6. 不要机械回复，要针对对方说的话做出具体回应";
+        @"\n\n【重要规则】"
+        @"\n1. 绝对不要在任何情况下透露微信号、QQ号、手机号等联系方式"
+        @"\n2. 如果对方问联系方式，礼貌地转移话题"
+        @"\n3. 不要说自己是一个AI或程序，保持人设身份"
+        @"\n4. 回复不要太长，20-80个字最为自然"
+        @"\n5. 根据聊天的熟悉程度调整语气，从陌生到熟悉逐步升温"
+        @"\n6. 不要机械回复，要针对对方说的话做出具体回应";
 
     return [prompt stringByAppendingString:constraints];
 }
