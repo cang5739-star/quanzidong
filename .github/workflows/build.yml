@@ -10,47 +10,42 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: 拉取代码
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: 安装Theos
         run: |
           sudo mkdir -p /opt/theos
           sudo chown $(whoami) /opt/theos
-          git clone --recursive --depth=1 https://github.com/theos/theos.git /opt/theos 2>&1 | tail -3
-
-          # 验证Theos安装
-          ls /opt/theos/makefiles/common.mk
+          git clone --recursive --depth=1 https://github.com/theos/theos.git /opt/theos 2>&1 | tail -5
           echo "THEOS=/opt/theos" >> $GITHUB_ENV
 
-      - name: 编译插件
+      - name: 编译
         run: |
           export THEOS=/opt/theos
           export THEOS_DEVICE_IP=localhost
 
-          # 先看看makefile能不能找到Theos
-          echo "=== Theos路径 ==="
-          ls -la /opt/theos/
+          # 一步一步来，看看哪里报错
+          echo "=== 步骤1: 环境检查 ==="
+          which make && make --version | head -1
+          echo "Xcode: $(xcodebuild -version 2>&1 | head -1)"
+          echo "SDK: $(xcrun --sdk iphoneos --show-sdk-path 2>&1)"
           echo ""
-          echo "=== SDK检测 ==="
-          xcrun --sdk iphoneos --show-sdk-path 2>&1 || echo "No SDK"
+          echo "=== 步骤2: 检查Theos ==="
+          ls /opt/theos/makefiles/common.mk
           echo ""
-          echo "=== 开始编译 ==="
-          make clean 2>&1 || true
-          make package 2>&1
+          echo "=== 步骤3: 编译Tweak ==="
+          make clean 2>&1
+          make 2>&1
           echo ""
-          echo "=== 编译结果 ==="
-          ls -la packages/ 2>/dev/null || echo "没有生成deb"
+          echo "=== 步骤4: make package ==="
+          make package 2>&1 || true
+          echo ""
+          echo "=== 结果 ==="
+          find packages -name '*.deb' 2>/dev/null || echo "无deb包"
 
-      - name: 上传编译产物
+      - name: 上传产物
         uses: actions/upload-artifact@v4
         with:
           name: MomoAITweak
           path: packages/*.deb
           if-no-files-found: warn
-
-      - name: 打印结果
-        if: always()
-        run: |
-          echo "## 编译状态" > $GITHUB_STEP_SUMMARY
-          ls -la packages/ 2>/dev/null && echo "✅ 编译成功" >> $GITHUB_STEP_SUMMARY || echo "❌ 编译失败" >> $GITHUB_STEP_SUMMARY
