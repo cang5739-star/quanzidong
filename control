@@ -1,0 +1,9 @@
+Package: com.matong.momoaitweak
+Name: 马桶Ai - 陌陌AI助手
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: 陌陌AI自动回复插件 - 支持AI聊天、人设、自动打招呼
+Maintainer: 马桶团队
+Author: 马桶团队
+Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5000), firmware (>= 14.0)

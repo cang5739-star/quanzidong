@@ -1,0 +1,53 @@
+name: 编译马桶Ai越狱插件
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:  # 手动触发
+
+jobs:
+  build:
+    runs-on: macos-latest   # GitHub免费的Mac服务器
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 安装Theos
+        run: |
+          set -e
+          # 下载预编译的Theos
+          git clone --recursive --depth=1 https://github.com/theos/theos.git $HOME/theos
+          # 下载iOS SDK (Theos需要)
+          curl -L https://github.com/xybp888/iOS-SDKs/releases/download/16.5/iOS16.5.sdk.zip -o /tmp/sdk.zip
+          mkdir -p $HOME/theos/sdks
+          unzip -q /tmp/sdk.zip -d $HOME/theos/sdks/
+          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+
+      - name: 编译插件
+        run: |
+          export THEOS=$HOME/theos
+          export THEOS_DEVICE_IP=localhost  # CI不需要真机
+          make package
+          echo "编译完成"
+
+      - name: 上传编译产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: MomoAITweak
+          path: packages/*.deb
+          if-no-files-found: error
+
+      - name: 上传编译包信息
+        run: |
+          echo "## 马桶Ai插件已编译" > $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 文件 | 说明 |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| \`packages/*.deb\` | Cydia/Sileo安装包 |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 安装方法" >> $GITHUB_STEP_SUMMARY
+          echo "1. 下载 .deb 文件" >> $GITHUB_STEP_SUMMARY
+          echo "2. 传到手机 (AirDrop / SCP / iFunbox)" >> $GITHUB_STEP_SUMMARY
+          echo "3. 用 Filza 打开并安装" >> $GITHUB_STEP_SUMMARY
+          ls -la packages/

@@ -1,0 +1,64 @@
+name: 生成陌陌Hook参考
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-reference:
+    runs-on: macos-latest
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 生成Hook参考文件
+        run: |
+          cat > hooks_reference.txt << 'REFEOF'
+          ========================================
+          马桶Ai - 陌陌Hook点查找指南
+          ========================================
+
+          步骤1: SSH进手机
+          -------------------------
+          ssh root@你的手机IP
+
+          步骤2: 找到陌陌App路径
+          -------------------------
+          find /var/containers/Bundle/Application -name "Momo.app" -type d
+
+          步骤3: class-dump导出头文件
+          -------------------------
+          # 安装class-dump: 在Cydia装 class-dump 或 自己下载
+          class-dump -H /path/to/Momo.app -o /tmp/momo_hdrs
+
+          # 或者用这个命令找关键类
+          class-dump -H /path/to/Momo.app -o /tmp/momo_hdrs 2>/dev/null
+
+          步骤4: 搜索关键类
+          -------------------------
+          # 找聊天相关
+          grep -r "Chat\|Message\|Session\|Conversation" /tmp/momo_hdrs/ | grep "@interface" | head -20
+
+          # 找消息内容属性
+          grep -r "content\|text\|message" /tmp/momo_hdrs/ | grep "@property" | head -20
+
+          步骤5: 搜索关键属性
+          -------------------------
+          # 在Tweak.xm中搜索 TODO 标记，替换类名
+          grep -n "MOMO_HOOK\|TODO\|FIXME\|猜测\|推测\|需要\|替换" Tweak.xm MomoHooks.mm
+
+          ========================================
+          用Frida查找(不需要class-dump):
+          ========================================
+
+          列出所有类:
+          frida -U com.momo.im -e "ObjC.classes"
+
+          查看消息对象结构:
+          frida -U com.momo.im -e "ObjC.choose(ObjC.classes['MCMessage'],function(m){console.log(m);})"
+
+          跟踪消息接收:
+          frida -U com.momo.im -e "Interceptor.attach(ObjC.classes['XXChatViewController']['- didReceiveMessage:'].implementation,{onEnter:function(args){console.log(args[2]);}})"
+
+          REFEOF
+          cat hooks_reference.txt
