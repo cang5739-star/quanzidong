@@ -5,6 +5,9 @@
 
 #import "MomoAI.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wincomplete-implementation"
+
 @implementation MomoAI
 
 + (instancetype)sharedInstance {
@@ -17,3 +20,5 @@
 }
 
 @end
+
+#pragma clang diagnostic pop
