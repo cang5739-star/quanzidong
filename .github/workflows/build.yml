@@ -21,11 +21,15 @@ jobs:
 
       - name: 安装ldid签名工具
         run: |
-          # ldid用于签名dylib，Theos依赖
           curl -L -o /tmp/ldid https://github.com/ProcursusTeam/ldid/releases/download/v2.1.5-procursus7/ldid_macosx_arm64
           chmod +x /tmp/ldid
           sudo cp /tmp/ldid /usr/local/bin/ldid
           echo "ldid installed at $(which ldid)"
+
+      - name: 安装dpkg打包工具
+        run: |
+          brew install dpkg 2>&1 | tail -3
+          which dpkg-deb
 
       - name: 编译
         run: |
