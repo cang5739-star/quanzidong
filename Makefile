@@ -7,7 +7,7 @@ TWEAK_NAME = MomoAITweak
 
 MomoAITweak_FILES = Tweak.xm MomoAI.mm AIChatManager.mm PersonaManager.mm \
                     KeywordFilter.mm ConfigManager.mm MomoHooks.mm
-MomoAITweak_CFLAGS = -fobjc-arc -O2
+MomoAITweak_CFLAGS = -fobjc-arc -O2 -Wno-error=incomplete-implementation -Wno-error=objc-protocol-method-implementation
 MomoAITweak_LIBRARIES =
 MomoAITweak_FRAMEWORKS = UIKit Foundation CoreGraphics Security
 MomoAITweak_PRIVATE_FRAMEWORKS =
