@@ -15,20 +15,32 @@ jobs:
 
       - name: 安装Theos
         run: |
-          # 传统方式安装Theos（这个最稳）
           sudo mkdir -p /opt/theos
           sudo chown $(whoami) /opt/theos
-          git clone --recursive --depth=1 https://github.com/theos/theos.git /opt/theos
+          git clone --recursive --depth=1 https://github.com/theos/theos.git /opt/theos 2>&1 | tail -3
 
-          # 复制SDK（macOS自带iOS SDK，直接链过去就行）
-          # Theos会自动检测Xcode的SDK
+          # 验证Theos安装
+          ls /opt/theos/makefiles/common.mk
           echo "THEOS=/opt/theos" >> $GITHUB_ENV
 
       - name: 编译插件
         run: |
           export THEOS=/opt/theos
           export THEOS_DEVICE_IP=localhost
+
+          # 先看看makefile能不能找到Theos
+          echo "=== Theos路径 ==="
+          ls -la /opt/theos/
+          echo ""
+          echo "=== SDK检测 ==="
+          xcrun --sdk iphoneos --show-sdk-path 2>&1 || echo "No SDK"
+          echo ""
+          echo "=== 开始编译 ==="
+          make clean 2>&1 || true
           make package 2>&1
+          echo ""
+          echo "=== 编译结果 ==="
+          ls -la packages/ 2>/dev/null || echo "没有生成deb"
 
       - name: 上传编译产物
         uses: actions/upload-artifact@v4
@@ -38,7 +50,7 @@ jobs:
           if-no-files-found: warn
 
       - name: 打印结果
+        if: always()
         run: |
-          echo "## ✅ 马桶Ai插件编译完成" > $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          ls -la packages/ 2>/dev/null || echo "未生成deb包，请检查日志"
+          echo "## 编译状态" > $GITHUB_STEP_SUMMARY
+          ls -la packages/ 2>/dev/null && echo "✅ 编译成功" >> $GITHUB_STEP_SUMMARY || echo "❌ 编译失败" >> $GITHUB_STEP_SUMMARY
